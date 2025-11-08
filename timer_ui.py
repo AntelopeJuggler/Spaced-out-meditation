@@ -12,15 +12,15 @@ class TimerApp(tk.Tk):
         self.resizable(False, False)
         
         # Configure space theme colors
-        self.configure(bg="#1a237e")  # Deep space blue background
+        self.configure(bg="#000000")  # Deep black background
         
         self.original_secs = 0
         self.remaining = 0
         self._job = None
         self.paused = True
 
-        label_style = {"bg": "#1a237e", "fg": "white"}  # Text color white on space blue
-        entry_style = {"bg": "#303f9f", "fg": "white", "insertbackground": "white"}  # Lighter blue for entry
+        label_style = {"bg": "#000000", "fg": "white"}  # Text color white on space blue
+        entry_style = {"bg": "#000000", "fg": "white", "insertbackground": "white"}  # Lighter blue for entry
         
         tk.Label(self, text="Set time (seconds or MM:SS):", **label_style).grid(row=0, column=0, padx=8, pady=8)
         self.entry = tk.Entry(self, width=12, **entry_style)
@@ -30,10 +30,10 @@ class TimerApp(tk.Tk):
         self.time_label = tk.Label(self, text=self._format_time(0), font=("Comic Sans MS", 24), **label_style)
         self.time_label.grid(row=1, column=0, columnspan=2, padx=8, pady=(0, 12))
 
-        btn_frame = tk.Frame(self, bg="#1a237e")
+        btn_frame = tk.Frame(self, bg="#000000")
         btn_frame.grid(row=2, column=0, columnspan=2, pady=(0,8))
 
-        button_style = {"bg": "#303f9f", "fg": "white", "activebackground": "#3949ab", "activeforeground": "white"}
+        button_style = {"bg": "#222222", "fg": "white", "activebackground": "#444444", "activeforeground": "white"}
         
         self.start_btn = tk.Button(btn_frame, text="Start", width=8, command=self.start, **button_style)
         self.start_btn.pack(side="left", padx=4)
@@ -76,6 +76,7 @@ class TimerApp(tk.Tk):
         self.pause_btn.config(state="normal", text="Pause")
         self.reset_btn.config(state="normal")
         self.paused = False
+        Sound.play()  # Start the audio
         self._tick()  # start countdown immediately
 
     def toggle_pause(self):
@@ -84,6 +85,7 @@ class TimerApp(tk.Tk):
             self.paused = False
             self.pause_btn.config(text="Pause")
             self._tick()
+            Sound.pygame.mixer.music.unpause()
         else:
             # pause
             self.paused = True
@@ -91,12 +93,14 @@ class TimerApp(tk.Tk):
             if self._job:
                 self.after_cancel(self._job)
                 self._job = None
+                Sound.pygame.mixer.music.pause()
 
     def reset(self):
         self.paused = True
         if self._job:
             self.after_cancel(self._job)
             self._job = None
+        Sound.stop()  # Stop the audio
         self.remaining = self.original_secs
         self.time_label.config(text=self._format_time(self.remaining))
         self.entry.config(state="normal")
@@ -121,6 +125,7 @@ class TimerApp(tk.Tk):
         self.pause_btn.config(state="disabled", text="Pause")
         self.reset_btn.config(state="disabled")
         self.paused = True
+        Sound.stop()  # Stop the audio when timer finishes
         messagebox.showinfo("Timer", "Time's up!")
 
 if __name__ == "__main__":
