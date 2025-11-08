@@ -10,28 +10,36 @@ class TimerApp(tk.Tk):
         super().__init__()
         self.title("Simple Timer")
         self.resizable(False, False)
-
+        
+        # Configure space theme colors
+        self.configure(bg="#1a237e")  # Deep space blue background
+        
         self.original_secs = 0
         self.remaining = 0
         self._job = None
         self.paused = True
 
-        tk.Label(self, text="Set time (seconds or MM:SS):").grid(row=0, column=0, padx=8, pady=8)
-        self.entry = tk.Entry(self, width=12)
+        label_style = {"bg": "#1a237e", "fg": "white"}  # Text color white on space blue
+        entry_style = {"bg": "#303f9f", "fg": "white", "insertbackground": "white"}  # Lighter blue for entry
+        
+        tk.Label(self, text="Set time (seconds or MM:SS):", **label_style).grid(row=0, column=0, padx=8, pady=8)
+        self.entry = tk.Entry(self, width=12, **entry_style)
         self.entry.grid(row=0, column=1, padx=8, pady=8)
         self.entry.insert(0, "60")  # default 60 seconds
 
-        self.time_label = tk.Label(self, text=self._format_time(0), font=("Comic Sans MS", 24))
+        self.time_label = tk.Label(self, text=self._format_time(0), font=("Comic Sans MS", 24), **label_style)
         self.time_label.grid(row=1, column=0, columnspan=2, padx=8, pady=(0, 12))
 
-        btn_frame = tk.Frame(self)
+        btn_frame = tk.Frame(self, bg="#1a237e")
         btn_frame.grid(row=2, column=0, columnspan=2, pady=(0,8))
 
-        self.start_btn = tk.Button(btn_frame, text="Start", width=8, command=self.start)
+        button_style = {"bg": "#303f9f", "fg": "white", "activebackground": "#3949ab", "activeforeground": "white"}
+        
+        self.start_btn = tk.Button(btn_frame, text="Start", width=8, command=self.start, **button_style)
         self.start_btn.pack(side="left", padx=4)
-        self.pause_btn = tk.Button(btn_frame, text="Pause", width=8, state="disabled", command=self.toggle_pause)
+        self.pause_btn = tk.Button(btn_frame, text="Pause", width=8, state="disabled", command=self.toggle_pause, **button_style)
         self.pause_btn.pack(side="left", padx=4)
-        self.reset_btn = tk.Button(btn_frame, text="Reset", width=8, state="disabled", command=self.reset)
+        self.reset_btn = tk.Button(btn_frame, text="Reset", width=8, state="disabled", command=self.reset, **button_style)
         self.reset_btn.pack(side="left", padx=4)
 
     def _format_time(self, secs):
