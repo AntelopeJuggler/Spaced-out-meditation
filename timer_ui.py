@@ -12,15 +12,15 @@ class TimerApp(tk.Tk):
         self.resizable(False, False)
         
         # Configure space theme colors
-        self.configure(bg="#1a237e")  # Deep space blue background
+        self.configure(bg="#000000")  # Deep space blue background
         
         self.original_secs = 0
         self.remaining = 0
         self._job = None
         self.paused = True
 
-        label_style = {"bg": "#1a237e", "fg": "white"}  # Text color white on space blue
-        entry_style = {"bg": "#303f9f", "fg": "white", "insertbackground": "white"}  # Lighter blue for entry
+        label_style = {"bg": "#000000", "fg": "white"}  # Text color white on space blue
+        entry_style = {"bg": "#000000", "fg": "white", "insertbackground": "white"}  # Lighter blue for entry
         
         tk.Label(self, text="Set time (seconds or MM:SS):", **label_style).grid(row=0, column=0, padx=8, pady=8)
         self.entry = tk.Entry(self, width=12, **entry_style)
@@ -30,11 +30,13 @@ class TimerApp(tk.Tk):
         self.time_label = tk.Label(self, text=self._format_time(0), font=("Comic Sans MS", 24), **label_style)
         self.time_label.grid(row=1, column=0, columnspan=2, padx=8, pady=(0, 12))
 
-        btn_frame = tk.Frame(self, bg="#1a237e")
+        # Use a black background for the frame so the whole window appears black
+        btn_frame = tk.Frame(self, bg="#000000")
         btn_frame.grid(row=2, column=0, columnspan=2, pady=(0,8))
 
-        button_style = {"bg": "#303f9f", "fg": "white", "activebackground": "#3949ab", "activeforeground": "white"}
-        
+        # Dark neutral button colors to contrast on black background
+        button_style = {"bg": "#222222", "fg": "white", "activebackground": "#444444", "activeforeground": "white"}
+
         self.start_btn = tk.Button(btn_frame, text="Start", width=8, command=self.start, **button_style)
         self.start_btn.pack(side="left", padx=4)
         self.pause_btn = tk.Button(btn_frame, text="Pause", width=8, state="disabled", command=self.toggle_pause, **button_style)
