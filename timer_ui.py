@@ -12,15 +12,15 @@ class TimerApp(tk.Tk):
         self.resizable(False, False)
         
         # Configure space theme colors
-        self.configure(bg="#000000")  # Deep space blue background
+        self.configure(bg="#000000")  # Black background
         
         self.original_secs = 0
         self.remaining = 0
         self._job = None
         self.paused = True
 
-        label_style = {"bg": "#000000", "fg": "white"}  # Text color white on space blue
-        entry_style = {"bg": "#000000", "fg": "white", "insertbackground": "white"}  # Lighter blue for entry
+        label_style = {"bg": "#000000", "fg": "white"}  # Text color white on black
+        entry_style = {"bg": "#000000", "fg": "white", "insertbackground": "white"}  # Entry
         
         tk.Label(self, text="Set time (seconds or MM:SS):", **label_style).grid(row=0, column=0, padx=8, pady=8)
         self.entry = tk.Entry(self, width=12, **entry_style)
