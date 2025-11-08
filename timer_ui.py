@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-
+import Sound
 # timer_ui.py
 # Simple Tkinter timer where the user sets the time (seconds or MM:SS) and can Start/Pause/Reset.
 
