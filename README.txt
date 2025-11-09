@@ -1,5 +1,4 @@
-Purpose of this website: This is a way to clear your mind and relax by viewing a calming screen (with timer) that has various space objects and periodic fun facts sprinkled in.
-This is a test commit
+This is a project created by Grace Gibbons (ggibbons12234), Nicholas Leonardo (Mcprosehp), Sydney Belter (cybersydward), and Simone Marta (AntelopeJuggler) for the 36-hour TigerHacks hackathon (University of Missouri, November 7-9, 2025).
 
-Collaborative Google Doc (only those with explicit access have permission to view): 
-https://docs.google.com/document/d/1ZReIKzcxbLq8Ql4vgomQwZvHdfEic_G7UWUin9AskJ4/edit
+Presentation: 
+https://www.canva.com/design/DAG4KllB1mU/0Rq_Nejjx_lM53yrgbBzPw/view?utm_content=DAG4KllB1mU#10
