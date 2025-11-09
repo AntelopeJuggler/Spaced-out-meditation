@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 import pygame
-from space_timer import TimerApp
+from timer_ui import TimerApp
 
 
 #used gemini to fix errors and refactor code
