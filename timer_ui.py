@@ -1,130 +1,118 @@
 import tkinter as tk
-from tkinter import messagebox
 
-# timer_ui.py
-# Simple Tkinter timer where the user sets the time (seconds or MM:SS) and can Start/Pause/Reset.
+class TimerApp(tk.Frame):
+    def __init__(self, master, on_start_animation, on_play_music, on_pause_animation, on_pause_music, on_resume_animation, on_resume_music, on_reset):
+        # Initialize the frame with a black background and no border
+        super().__init__(master, bg="#330524", highlightthickness=0)
 
+        # Store the callback functions from main.py
+        self.on_start_animation = on_start_animation
+        self.on_play_music = on_play_music
+        self.on_pause_animation = on_pause_animation
+        self.on_pause_music = on_pause_music
+        self.on_resume_animation = on_resume_animation
+        self.on_resume_music = on_resume_music
+        self.on_reset = on_reset
 
-class TimerApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Simple Timer")
-        self.resizable(False, False)
+        # Internal state variables for the timer
+        self._timer_job = None
+        self.time_left = 0
+        self.is_running = False
+        self.is_paused = False
+
+        # --- UI Elements for the Timer ---
+        self.font_style = ("Comic Sans MS", 16)
+
+        # ### NEW WIDGET: THE TITLE LABEL ###
+        self.title_label = tk.Label(
+            self,
+            text="spaced out",
+            font=("Comic Sans MS", 24, "bold"),
+            bg="#330524",
+            fg="white"
+        )
+        self.title_label.pack(pady=(0, 20)) # Add padding below the title
+
+        # The entry box for choosing the time
+        self.entry = tk.Entry(
+            self,
+            width=5,
+            font=("Comic Sans MS", 40),
+            justify='center',
+            bg="black",
+            fg="white",
+            insertbackground="white",
+            highlightthickness=0,
+            bd=0,
+            relief=tk.FLAT
+        )
+        self.entry.insert(0, "60") # Default to 60 seconds
+        self.entry.pack(pady=10)
+
+        # The label for displaying the countdown
+        self.label = tk.Label(self, text="00:00", font=("Comic Sans MS", 50, "bold"), bg="#330524", fg="white")
+        self.label.pack(pady=10)
+
+        # Frame to hold the control buttons
+        button_frame = tk.Frame(self, bg="#330524")
+        button_frame.pack(pady=10)
         
-        # Configure space theme colors
-        self.configure(bg="#000000")  # Black background
-        
-        self.original_secs = 0
-        self.remaining = 0
-        self._job = None
-        self.paused = True
+        self.start_button = tk.Button(button_frame, text="Start", command=self.handle_start_stop, font=self.font_style, bg="#2ECC71", fg="white", width=8)
+        self.start_button.pack(side="left", padx=5)
 
-        label_style = {"bg": "#000000", "fg": "white"}  # Text color white on black
-        entry_style = {"bg": "#000000", "fg": "white", "insertbackground": "white"}  # Entry
-        
-        tk.Label(self, text="Set time (seconds or MM:SS):", **label_style).grid(row=0, column=0, padx=8, pady=8)
-        self.entry = tk.Entry(self, width=12, **entry_style)
-        self.entry.grid(row=0, column=1, padx=8, pady=8)
-        self.entry.insert(0, "60")  # default 60 seconds
+        self.reset_button = tk.Button(button_frame, text="Reset", command=self.handle_reset, font=self.font_style, bg="#E74C3C", fg="white", width=8)
+        self.reset_button.pack(side="left", padx=5)
 
-        self.time_label = tk.Label(self, text=self._format_time(0), font=("Comic Sans MS", 24), **label_style)
-        self.time_label.grid(row=1, column=0, columnspan=2, padx=8, pady=(0, 12))
+    def handle_start_stop(self):
+        """Handles logic for the Start, Pause, and Resume button."""
+        if not self.is_running:
+            try:
+                if not self.is_paused:
+                    # Timer logic is kept in seconds
+                    total_seconds = int(self.entry.get())
+                    self.time_left = total_seconds
+                    self.on_start_animation()
+                    self.on_play_music()
+                else:
+                    self.on_resume_animation()
+                    self.on_resume_music()
 
-        # Use a black background for the frame so the whole window appears black
-        btn_frame = tk.Frame(self, bg="#000000")
-        btn_frame.grid(row=2, column=0, columnspan=2, pady=(0,8))
-
-        # Dark neutral button colors to contrast on black background
-        button_style = {"bg": "#222222", "fg": "white", "activebackground": "#444444", "activeforeground": "white"}
-
-        self.start_btn = tk.Button(btn_frame, text="Start", width=8, command=self.start, **button_style)
-        self.start_btn.pack(side="left", padx=4)
-        self.pause_btn = tk.Button(btn_frame, text="Pause", width=8, state="disabled", command=self.toggle_pause, **button_style)
-        self.pause_btn.pack(side="left", padx=4)
-        self.reset_btn = tk.Button(btn_frame, text="Reset", width=8, state="disabled", command=self.reset, **button_style)
-        self.reset_btn.pack(side="left", padx=4)
-
-    def _format_time(self, secs):
-        mins = secs // 60
-        s = secs % 60
-        return f"{mins:02d}:{s:02d}"
-
-    def _parse_input(self, text):
-        text = text.strip()
-        if ":" in text:
-            parts = text.split(":")
-            if len(parts) != 2:
-                raise ValueError("Invalid MM:SS format")
-            mins = int(parts[0])
-            secs = int(parts[1])
-            return mins * 60 + secs
-        return int(text)
-
-    def start(self):
-        try:
-            secs = self._parse_input(self.entry.get())
-        except Exception:
-            messagebox.showerror("Invalid input", "Enter seconds (e.g. 90) or MM:SS (e.g. 1:30).")
-            return
-
-        if secs <= 0:
-            messagebox.showerror("Invalid input", "Please enter a positive time.")
-            return
-
-        self.original_secs = secs
-        self.remaining = secs
-        self.entry.config(state="disabled")
-        self.start_btn.config(state="disabled")
-        self.pause_btn.config(state="normal", text="Pause")
-        self.reset_btn.config(state="normal")
-        self.paused = False
-        self._tick()  # start countdown immediately
-
-    def toggle_pause(self):
-        if self.paused:
-            # resume
-            self.paused = False
-            self.pause_btn.config(text="Pause")
-            self._tick()
+                self.is_running = True
+                self.is_paused = False
+                self.start_button.config(text="Pause")
+                self.countdown()
+            except ValueError:
+                self.label.config(text="Invalid Time")
+                
         else:
-            # pause
-            self.paused = True
-            self.pause_btn.config(text="Resume")
-            if self._job:
-                self.after_cancel(self._job)
-                self._job = None
+            self.is_running = False
+            self.is_paused = True
+            self.start_button.config(text="Resume")
+            if self._timer_job:
+                self.after_cancel(self._timer_job)
+            self.on_pause_animation()
+            self.on_pause_music()
 
-    def reset(self):
-        self.paused = True
-        if self._job:
-            self.after_cancel(self._job)
-            self._job = None
-        self.remaining = self.original_secs
-        self.time_label.config(text=self._format_time(self.remaining))
-        self.entry.config(state="normal")
-        self.start_btn.config(state="normal")
-        self.pause_btn.config(state="disabled", text="Pause")
-        self.reset_btn.config(state="disabled")
+    def handle_reset(self):
+        """Handles the logic for the Reset button."""
+        if self._timer_job:
+            self.after_cancel(self._timer_job)
+        
+        self.is_running = False
+        self.is_paused = False
+        self.time_left = 0
+        self.label.config(text="00:00")
+        self.start_button.config(text="Start")
+        self.on_reset()
 
-    def _tick(self):
-        if self.paused:
-            return
-        self.time_label.config(text=self._format_time(self.remaining))
-        if self.remaining <= 0:
-            self._on_finish()
-            return
-        self.remaining -= 1
-        self._job = self.after(1000, self._tick)
-
-    def _on_finish(self):
-        self.time_label.config(text="00:00")
-        self.entry.config(state="normal")
-        self.start_btn.config(state="normal")
-        self.pause_btn.config(state="disabled", text="Pause")
-        self.reset_btn.config(state="disabled")
-        self.paused = True
-        messagebox.showinfo("Timer", "Time's up!")
-
-if __name__ == "__main__":
-    app = TimerApp()
-    app.mainloop()
+    def countdown(self):
+        """The main timer loop that updates the label every second."""
+        if self.is_running and self.time_left > 0:
+            minutes = self.time_left // 60
+            seconds = self.time_left % 60
+            self.label.config(text=f"{minutes:02d}:{seconds:02d}")
+            self.time_left -= 1
+            self._timer_job = self.after(1000, self.countdown)
+        elif self.time_left <= 0:
+            self.label.config(text="Done!")
+            self.handle_reset()
